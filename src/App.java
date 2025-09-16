@@ -1,21 +1,54 @@
 import java.util.Scanner;
 
 public class App {
+    static String User = "Användare";
+    static int Money = 0;
+
+    public static void withdrawMoney(Scanner input) {
+        while (true) { 
+            System.out.println("Hej hur mycket pengar skulle du vilja ta ut? skriv då t.ex. 100");
+            System.out.println("[B] Tillbaka till huvudmenun");
+
+            String choice = input.next();
+            if (choice.equalsIgnoreCase("b")) {
+                break;
+            }
+            int wMoney = Integer.parseInt(choice);
+            if (wMoney <= Money) {
+                Money = Money - wMoney;
+            } else {
+                System.out.println("Du kan inte ta ut mer än vad du har på dit konto");
+            }
+        }
+    }
+
+    public static void depositMoney (Scanner input) {
+        while (true) { 
+            System.out.println("Hej hur mycket pengar skulle du vilja sätta in? skriv då t.ex. 100");
+            System.out.println("[B] Tillbaka till huvudmenun");
+
+            String choice = input.next();
+            if (choice.equalsIgnoreCase("b")) {
+                break;
+            }
+
+            Money = Money + Integer.parseInt(choice);
+        } 
+    }
     public static void main(String[] args) throws Exception {
-        String User = "Användare";
-        int Money = 0;
         try (Scanner input = new Scanner(System.in)) {
-            System.out.println("Välkommen " + User + " din saldo är " + Money);
-            System.out.println("[I] Sätt in");
-            System.out.println("[U] Ta ut");
-            System.out.println("[A] Avsluta");
-            while (true) { 
-                switch (input.next()) {
+            while (true) {
+                System.out.println("Välkommen " + User + " din saldo är " + Money);
+                System.out.println("[I] Sätt in");
+                System.out.println("[U] Ta ut");
+                System.out.println("[A] Avsluta");
+                String co = input.next();
+                switch (co) {
                     case "I":
-                        System.out.println("In");
+                        depositMoney(input);
                         break;
                     case "U":
-                        System.out.println("Ut");
+                        withdrawMoney(input);
                         break;
                     case "A":
                         System.out.println("");
