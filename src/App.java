@@ -1,8 +1,13 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+
+
 public class App {
-    static String User = null;
-    static int Pin;
+    static List<String> UserList = new ArrayList();
+
+    static String currentUser = null;
     static int Money = 0;
 
     /* Kollar ifall du har loggat in och på uppstart så det alltid false*/
@@ -41,10 +46,10 @@ public class App {
     }
 
     public static void userInterface (Scanner input) {
-        System.out.println("Välkommen " + User + " din saldo är " + Money);
+        System.out.println("Välkommen " + currentUser + " din saldo är " + Money);
         System.out.println("[I] Sätt in");
         System.out.println("[U] Ta ut");
-        System.out.println("[A] Avsluta");
+        System.out.println("[A] Logga ut");
         String co = input.next();
         switch (co) {
             case "I":
@@ -54,27 +59,44 @@ public class App {
                 withdrawMoney(input);
                 break;
             case "A":
-                System.out.println("");
+                isLoggedIn = false;
                 break;
             default:
                 System.out.println("Fel försök igen");
         }
     }
 
+    public static boolean doesUserExits (String username) {
+        for (String user : UserList) {
+            String[] name = user.split(":");
+            if (username.equalsIgnoreCase(name[0])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static void loginView(Scanner input) {
         System.out.println("Välkommen till banken var vänlig och skriv in ditt använda namn");
         String lUser = input.next();
 
-        if (lUser.equalsIgnoreCase(User) && User != null) {
+        if (doesUserExits(lUser) && !UserList.isEmpty()) {
             System.out.println("Skriv in din pinkod");
-            int lPin = Integer.parseInt(input.next());
-            if (lPin == Pin) {
-                isLoggedIn = true;
+            while (true) { 
+                String lPin = input.next();
+                if (UserList.indexOf(lUser + ":" + lPin) != -1 && UserList.get(UserList.indexOf(lUser + ":" + lPin)) != null) {
+                    currentUser = lUser;
+                    isLoggedIn = true;
+                    break;
+                }
+                System.out.println("Fel Pinkod. Försök igen");
             }
         } else {
-            User = lUser;
+            currentUser = lUser;
             System.out.println("Välkommen ny användare var vänlig att register en pinkod till dit konto");
-            Pin = Integer.parseInt(input.next());
+            int Pin = Integer.parseInt(input.next());
+            UserList.add(lUser + ":" + Pin);
         }
     }
 
