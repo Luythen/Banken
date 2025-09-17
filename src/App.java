@@ -35,27 +35,32 @@ public class App {
             Money = Money + Integer.parseInt(choice);
         } 
     }
+
+    public static void userInterface (Scanner input) {
+        System.out.println("Välkommen " + User + " din saldo är " + Money);
+        System.out.println("[I] Sätt in");
+        System.out.println("[U] Ta ut");
+        System.out.println("[A] Avsluta");
+        String co = input.next();
+        switch (co) {
+            case "I":
+                depositMoney(input);
+                break;
+            case "U":
+                withdrawMoney(input);
+                break;
+            case "A":
+                System.out.println("");
+                break;
+            default:
+                System.out.println("Fel försök igen");
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         try (Scanner input = new Scanner(System.in)) {
             while (true) {
-                System.out.println("Välkommen " + User + " din saldo är " + Money);
-                System.out.println("[I] Sätt in");
-                System.out.println("[U] Ta ut");
-                System.out.println("[A] Avsluta");
-                String co = input.next();
-                switch (co) {
-                    case "I":
-                        depositMoney(input);
-                        break;
-                    case "U":
-                        withdrawMoney(input);
-                        break;
-                    case "A":
-                        System.out.println("");
-                        break;
-                    default:
-                        System.out.println("Fel försök igen");
-                }
+                userInterface(input);
             }
         }
     }
