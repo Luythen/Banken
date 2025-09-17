@@ -1,8 +1,8 @@
 import java.util.Scanner;
 
 public class App {
-    static String User = "Andreas";
-    static int Pin = 1354;
+    static String User = null;
+    static int Pin;
     static int Money = 0;
 
     /* Kollar ifall du har loggat in och på uppstart så det alltid false*/
@@ -65,12 +65,16 @@ public class App {
         System.out.println("Välkommen till banken var vänlig och skriv in ditt använda namn");
         String lUser = input.next();
 
-        if (lUser.equalsIgnoreCase(User)) {
+        if (lUser.equalsIgnoreCase(User) && User != null) {
             System.out.println("Skriv in din pinkod");
             int lPin = Integer.parseInt(input.next());
             if (lPin == Pin) {
                 isLoggedIn = true;
             }
+        } else {
+            User = lUser;
+            System.out.println("Välkommen ny användare var vänlig att register en pinkod till dit konto");
+            Pin = Integer.parseInt(input.next());
         }
     }
 
