@@ -1,8 +1,12 @@
 import java.util.Scanner;
 
 public class App {
-    static String User = "Användare";
+    static String User = "Andreas";
+    static int Pin = 1354;
     static int Money = 0;
+
+    /* Kollar ifall du har loggat in och på uppstart så det alltid false*/
+    static boolean isLoggedIn = false;
 
     public static void withdrawMoney(Scanner input) {
         while (true) { 
@@ -57,9 +61,26 @@ public class App {
         }
     }
 
+    public static void loginView(Scanner input) {
+        System.out.println("Välkommen till banken var vänlig och skriv in ditt använda namn");
+        String lUser = input.next();
+
+        if (lUser.equalsIgnoreCase(User)) {
+            System.out.println("Skriv in din pinkod");
+            int lPin = Integer.parseInt(input.next());
+            if (lPin == Pin) {
+                isLoggedIn = true;
+            }
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         try (Scanner input = new Scanner(System.in)) {
             while (true) {
+                if (!isLoggedIn) {
+                    loginView(input);
+                }
+
                 userInterface(input);
             }
         }
