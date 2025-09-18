@@ -5,13 +5,41 @@ import java.util.Scanner;
 
 
 public class App {
-    static List<String> UserList = new ArrayList();
+    static List<String> UserList = new ArrayList<>();
+    static List<String> moneyList = new ArrayList<>();
 
     static String currentUser = null;
     static int Money = 0;
 
     /* Kollar ifall du har loggat in och på uppstart så det alltid false*/
     static boolean isLoggedIn = false;
+
+    public static int getIndexFromList (List<String> list) {
+        for (String index : list) {
+            /* gör om till en string array så det blir ["Användanamn", "saldo"] */
+            String[] name = index.split(":");
+            if (currentUser.equalsIgnoreCase(name[0])) {
+                return list.indexOf(index);
+            }
+        }
+        return -1;
+    }
+
+    public static int getUsersCurrentMoney () {
+        for (String saldo : moneyList) {
+            /* gör om till en string array så det blir ["Användanamn", "saldo"] */
+            String[] name = saldo.split(":");
+            if (currentUser.equalsIgnoreCase(name[0])) {
+                return Integer.parseInt(name[1]);
+            }
+        }
+        return 0;
+    }
+
+    public static void updateUserMoney (int Index) {
+        moneyList.remove(Index);
+        moneyList.add(currentUser + ":" + Money);
+    }
 
     public static void withdrawMoney(Scanner input) {
         while (true) { 
@@ -25,6 +53,7 @@ public class App {
             int wMoney = Integer.parseInt(choice);
             if (wMoney <= Money) {
                 Money = Money - wMoney;
+                updateUserMoney(getIndexFromList(moneyList));
             } else {
                 System.out.println("Du kan inte ta ut mer än vad du har på dit konto");
             }
@@ -42,6 +71,7 @@ public class App {
             }
 
             Money = Money + Integer.parseInt(choice);
+            updateUserMoney(getIndexFromList(moneyList));
         } 
     }
 
@@ -60,6 +90,7 @@ public class App {
                 break;
             case "A":
                 isLoggedIn = false;
+                Money = 0;
                 break;
             default:
                 System.out.println("Fel försök igen");
@@ -68,6 +99,7 @@ public class App {
 
     public static boolean doesUserExits (String username) {
         for (String user : UserList) {
+            /* gör om till en string array så det blir ["Användanamn", "pinkod"] */
             String[] name = user.split(":");
             if (username.equalsIgnoreCase(name[0])) {
                 return true;
@@ -87,6 +119,7 @@ public class App {
                 String lPin = input.next();
                 if (UserList.indexOf(lUser + ":" + lPin) != -1 && UserList.get(UserList.indexOf(lUser + ":" + lPin)) != null) {
                     currentUser = lUser;
+                    Money = getUsersCurrentMoney();
                     isLoggedIn = true;
                     break;
                 }
@@ -97,12 +130,15 @@ public class App {
             System.out.println("Välkommen ny användare var vänlig att register en pinkod till dit konto");
             int Pin = Integer.parseInt(input.next());
             UserList.add(lUser + ":" + Pin);
+            moneyList.add(lUser + ":" + Money);
+            isLoggedIn = true;
         }
     }
 
     public static void main(String[] args) throws Exception {
         try (Scanner input = new Scanner(System.in)) {
             while (true) {
+                System.out.println(isLoggedIn);
                 if (!isLoggedIn) {
                     loginView(input);
                 }
