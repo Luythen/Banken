@@ -186,7 +186,7 @@ public class App {
                 String changedPIN = input.next();
                 if (isNumeric(changedPIN)) {
                     UserList.remove(getIndexFromList(UserList));
-                    UserList.add(currentUser + "@" + currentPIN);
+                    UserList.add(currentUser + "@" + changedPIN);
                     break;
                 }
 
