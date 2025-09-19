@@ -167,45 +167,46 @@ public class App {
         return false;
     }
 
-    public static void loginView(Scanner input) {
-        System.out.println("Välkommen till banken var vänlig och skriv in ditt använda namn");
-        String lUser = input.next();
-
-        if (doesUserExits(lUser)) {
-            System.out.println("Skriv in din pinkod");
-            while (true) { 
-                String lPin = input.next();
-                if (UserList.indexOf(lUser + "@" + lPin) != -1 && isNumeric(lPin)) {
-                    currentUser = lUser;
-                    Money = getUsersCurrentMoney();
-                    isLoggedIn = true;
-                    break;
-                }
-                System.out.println("Fel Pinkod. Försök igen");
-            }
-        } else {
-            currentUser = lUser;
-            System.out.println("Välkommen ny användare var vänlig att register en pinkod till dit konto");
-            String Pin;
-            while (true) { 
-                Pin = input.next();
-                if (isNumeric(Pin)) {
-                    UserList.add(lUser + "@" + Pin);
-                    moneyList.add(lUser + "@" + Money);
-                    isLoggedIn = true;
-                    break;
-                }
-
-                System.out.println("Fel PIN koden får ej inhållar bokstäver");
-            }
-        }
-    }
-
     public static void main(String[] args) throws Exception {
         try (Scanner input = new Scanner(System.in)) {
             while (true) {
                 if (!isLoggedIn) {
-                    loginView(input);
+                    System.out.println("Välkommen till banken var vänlig och skriv in ditt använda namn");
+                    System.out.println("[A] För att avsluta applikation");
+                    String exitOrUsername = input.next();
+
+                    if (exitOrUsername.equalsIgnoreCase("A")) {
+                        break;
+                    }
+
+                    if (doesUserExits(exitOrUsername)) {
+                        System.out.println("Skriv in din pinkod");
+                        while (true) { 
+                            String lPin = input.next();
+                            if (UserList.indexOf(exitOrUsername + "@" + lPin) != -1 && isNumeric(lPin)) {
+                                currentUser = exitOrUsername;
+                                Money = getUsersCurrentMoney();
+                                isLoggedIn = true;
+                                break;
+                            }
+                            System.out.println("Fel Pinkod. Försök igen");
+                        }
+                    } else {
+                        currentUser = exitOrUsername;
+                        System.out.println("Välkommen ny användare var vänlig att register en pinkod till dit konto");
+                        String Pin;
+                        while (true) { 
+                            Pin = input.next();
+                            if (isNumeric(Pin)) {
+                                UserList.add(exitOrUsername + "@" + Pin);
+                                moneyList.add(exitOrUsername + "@" + Money);
+                                isLoggedIn = true;
+                                break;
+                            }
+
+                            System.out.println("Fel PIN koden får ej inhållar bokstäver");
+                        }
+                    }
                 }
 
                 userInterface(input);
