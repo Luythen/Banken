@@ -20,13 +20,25 @@ public class App {
 
     public static int getIndexFromList (List<String> list) {
         for (String index : list) {
-            /* gör om till en string array så det blir ["Användanamn", "saldo"] */
-            String[] name = index.split(":");
+            String[] name = index.split("@");
             if (currentUser.equalsIgnoreCase(name[0])) {
                 return list.indexOf(index);
             }
         }
         return -1;
+    }
+    
+    /* source: https://www.baeldung.com/java-check-string-number */
+    public static boolean isNumeric (String number) {
+        if (number == null) {
+            return false;
+        }
+        try {
+            int i = Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
     }
 
     public static void transactionHistoryView (Scanner input) {
@@ -51,14 +63,14 @@ public class App {
     }
 
     public static void addToUsersTransactions (String type,int amount) {
-        /* ["Användanamn":"Datum":"Tid":"Transaktiontyp":"belopp"] */
+        /* ["Användanamn"@"Datum"@"Tid"@"Transaktiontyp"@"belopp"] */
         transactionList.add(currentUser + "@" + LocalDate.now() + "@"+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "@" + type + "@" + amount);
     }
 
     public static int getUsersCurrentMoney () {
         for (String saldo : moneyList) {
             /* gör om till en string array så det blir ["Användanamn", "saldo"] */
-            String[] name = saldo.split(":");
+            String[] name = saldo.split("@");
             if (currentUser.equalsIgnoreCase(name[0])) {
                 return Integer.parseInt(name[1]);
             }
@@ -68,25 +80,30 @@ public class App {
 
     public static void updateUserMoney (int Index) {
         moneyList.remove(Index);
-        moneyList.add(currentUser + ":" + Money);
+        moneyList.add(currentUser + "@" + Money);
     }
 
     public static void withdrawMoney(Scanner input) {
         while (true) { 
             System.out.println("Hej hur mycket pengar skulle du vilja ta ut? skriv då t.ex. 100");
+            System.out.println("Din Saldo är " + Money);
             System.out.println("[B] Tillbaka till huvudmenun");
 
             String choice = input.next();
             if (choice.equalsIgnoreCase("b")) {
                 break;
             }
-            int wMoney = Integer.parseInt(choice);
-            if (wMoney <= Money) {
-                Money = Money - wMoney;
-                updateUserMoney(getIndexFromList(moneyList));
-                addToUsersTransactions("Uttag", -wMoney);
+            if (isNumeric(choice)) {
+                int wMoney = Integer.parseInt(choice);
+                if (wMoney <= Money) {
+                    Money = Money - wMoney;
+                    updateUserMoney(getIndexFromList(moneyList));
+                    addToUsersTransactions("Uttag", -wMoney);
+                } else {
+                    System.out.println("Du kan inte ta ut mer än vad du har på dit konto");
+                }
             } else {
-                System.out.println("Du kan inte ta ut mer än vad du har på dit konto");
+                System.out.println("Fel du kan bara skriv nummer");
             }
         }
     }
@@ -94,16 +111,21 @@ public class App {
     public static void depositMoney (Scanner input) {
         while (true) { 
             System.out.println("Hej hur mycket pengar skulle du vilja sätta in? skriv då t.ex. 100");
+            System.out.println("Din Saldo är " + Money);
             System.out.println("[B] Tillbaka till huvudmenun");
 
             String choice = input.next();
             if (choice.equalsIgnoreCase("b")) {
                 break;
             }
-            int amount = Integer.parseInt(choice);
-            Money = Money + amount;
-            updateUserMoney(getIndexFromList(moneyList));
-            addToUsersTransactions("Insättning", amount);
+            if (isNumeric(choice)) {
+                int amount = Integer.parseInt(choice);
+                Money = Money + amount;
+                updateUserMoney(getIndexFromList(moneyList));
+                addToUsersTransactions("Insättning", amount);
+            } else {
+                System.out.println("Fel du kan bara skriv nummer");
+            }
         } 
     }
 
@@ -114,7 +136,7 @@ public class App {
         System.out.println("[T] Transaktionshistorik");
         System.out.println("[A] Logga ut");
         String co = input.next();
-        switch (co) {
+        switch (co.toUpperCase()){
             case "I":
                 depositMoney(input);
                 break;
@@ -136,7 +158,7 @@ public class App {
     public static boolean doesUserExits (String username) {
         for (String user : UserList) {
             /* gör om till en string array så det blir ["Användanamn", "pinkod"] */
-            String[] name = user.split(":");
+            String[] name = user.split("@");
             if (username.equalsIgnoreCase(name[0])) {
                 return true;
             }
@@ -149,11 +171,11 @@ public class App {
         System.out.println("Välkommen till banken var vänlig och skriv in ditt använda namn");
         String lUser = input.next();
 
-        if (doesUserExits(lUser) && !UserList.isEmpty()) {
+        if (doesUserExits(lUser)) {
             System.out.println("Skriv in din pinkod");
             while (true) { 
                 String lPin = input.next();
-                if (UserList.indexOf(lUser + ":" + lPin) != -1 && UserList.get(UserList.indexOf(lUser + ":" + lPin)) != null) {
+                if (UserList.indexOf(lUser + "@" + lPin) != -1 && isNumeric(lPin)) {
                     currentUser = lUser;
                     Money = getUsersCurrentMoney();
                     isLoggedIn = true;
@@ -164,17 +186,24 @@ public class App {
         } else {
             currentUser = lUser;
             System.out.println("Välkommen ny användare var vänlig att register en pinkod till dit konto");
-            int Pin = Integer.parseInt(input.next());
-            UserList.add(lUser + ":" + Pin);
-            moneyList.add(lUser + ":" + Money);
-            isLoggedIn = true;
+            String Pin;
+            while (true) { 
+                Pin = input.next();
+                if (isNumeric(Pin)) {
+                    UserList.add(lUser + "@" + Pin);
+                    moneyList.add(lUser + "@" + Money);
+                    isLoggedIn = true;
+                    break;
+                }
+
+                System.out.println("Fel PIN koden får ej inhållar bokstäver");
+            }
         }
     }
 
     public static void main(String[] args) throws Exception {
         try (Scanner input = new Scanner(System.in)) {
             while (true) {
-                System.out.println(isLoggedIn);
                 if (!isLoggedIn) {
                     loginView(input);
                 }
