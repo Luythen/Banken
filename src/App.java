@@ -30,7 +30,7 @@ public class App {
     
     /* source: https://www.baeldung.com/java-check-string-number */
     public static boolean isNumeric (String number) {
-        if (number == null) {
+        if (number == null || number.contains("-")) {
             return false;
         }
         try {
