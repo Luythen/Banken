@@ -134,6 +134,7 @@ public class App {
         System.out.println("[I] Sätt in");
         System.out.println("[U] Ta ut");
         System.out.println("[T] Transaktionshistorik");
+        System.out.println("[B] Byt PIN kod");
         System.out.println("[A] Logga ut");
         String co = input.next();
         switch (co.toUpperCase()){
@@ -145,6 +146,9 @@ public class App {
                 break;
             case "T":
                 transactionHistoryView(input);
+                break;
+            case "B":
+                changePINView(input);
                 break;
             case "A":
                 isLoggedIn = false;
@@ -165,6 +169,32 @@ public class App {
         }
 
         return false;
+    }
+
+    public static void changePINView (Scanner input) {
+        boolean correctCurrentPIN = false;
+        String currentPIN = "0";
+
+        System.out.println("Vad är din nuvarande PIN");
+        while (true) { 
+            if (!correctCurrentPIN) {
+                currentPIN = input.next();
+            } 
+            if (UserList.indexOf(currentUser + "@" + currentPIN) != -1) {
+                System.out.println("Vad vill du byta din PIN till");
+                correctCurrentPIN = true;
+                String changedPIN = input.next();
+                if (isNumeric(changedPIN)) {
+                    UserList.remove(getIndexFromList(UserList));
+                    UserList.add(currentUser + "@" + currentPIN);
+                    break;
+                }
+
+                System.out.println("Fel PIN koden får ej inhållar bokstäver");
+            } else {
+                System.out.println("Fel PIN försök igen!");
+            }
+        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -198,7 +228,7 @@ public class App {
                         while (true) { 
                             Pin = input.next();
                             if (isNumeric(Pin)) {
-                                UserList.add(exitOrUsername + "@" + Pin);
+                                UserList.add(currentUser + "@" + Pin);
                                 moneyList.add(exitOrUsername + "@" + Money);
                                 isLoggedIn = true;
                                 break;
